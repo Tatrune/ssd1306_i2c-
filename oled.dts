@@ -16,6 +16,7 @@
                 compatible = "ssd1306";
                 reg = <0x3c>;
                 status = "okay";
+            };
 
             oled2: ssd1306@3d {
                 compatible = "ssd1306";
