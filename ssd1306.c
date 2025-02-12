@@ -29,7 +29,7 @@ static dev_t my_device_nr;
 static struct class *my_class;
 static struct cdev my_device;
 
-#define DRIVER_NAME "dummydriver"
+#define DRIVER_NAME "ssd1306"
 #define DRIVER_CLASS "MyModuleClass"
 
 static const unsigned char ssd1306_font[][SSD1306_DEF_FONT_SIZE] = {
@@ -212,14 +212,16 @@ static void ssd1306_set_brightness(struct ssd1306_i2c_module *module, uint8_t br
 	ssd1306_write(module, true, brightness);
 }
 
-static void ssd1306_clear(struct ssd1306_i2c_module *module)
+void ssd1306_clear(struct ssd1306_i2c_module *module) 
 {
-	unsigned int total = 128 * 8; 
-	int i;
-
-	for (i = 0; i < total; i++) {
-		ssd1306_write(module, false, 0x00);
-	}
+	uint8_t page = 0;
+	uint8_t col = 0;
+    for (page = 0; page < 8; page++) {  // SSD1306 8 pages (128x64)
+        ssd1306_set_cursor(module, 0, page);    
+        for (col = 0; col < 128; col++) {
+            ssd1306_write(module, false, 0x00); //0x00 to col
+        }
+    }
 }
 
 static void ssd1306_set_page_addressing_mode(struct ssd1306_i2c_module *module)
@@ -263,16 +265,16 @@ static int ssd1306_display_init(struct ssd1306_i2c_module *module)
 }
 
 static ssize_t driver_write(struct file *File, const char *user_buffer, size_t count, loff_t *offs) {
-	memset(buffer, 0, 127);
 	int to_copy, not_copied, delta;
-
+	memset(buffer, 0, 127);
+	
 	/* Get amount of data to copy */
 	to_copy = min(count, sizeof(buffer));
 
 	/* Copy data to user */
 	not_copied = copy_from_user(buffer, user_buffer, to_copy);
 
-	ssd1306_set_page_addressing_mode(module);
+	//ssd1306_set_page_addressing_mode(module);
 	ssd1306_clear(module);
 	ssd1306_set_cursor(module, 0, 0);
 	ssd1306_print_string(module, (unsigned char *)buffer);
@@ -317,9 +319,8 @@ static int ssd1306_i2c_probe(struct i2c_client *client, const struct i2c_device_
 
 	ssd1306_display_init(module);
 	ssd1306_set_cursor(module, 0, 0);
-	ssd1306_print_string(module, "Nhiet do:\n");
+	ssd1306_print_string(module, "Hello World\n");
 	pr_info("Trung: %s, %d\n", __func__, __LINE__);
-	int retval;
 	printk("Hello, Kernel!\n");
 
 	/* Allocate a device nr */

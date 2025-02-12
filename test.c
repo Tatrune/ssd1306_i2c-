@@ -5,7 +5,7 @@
 #include <string.h>
 
 int main() {
-    int dev = open("/dev/dummydriver", O_RDWR);
+    int dev = open("/dev/ssd1306", O_RDWR);
     if (dev == -1) {
         perror("Opening was not possible");
         return -1;

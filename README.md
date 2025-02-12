@@ -5,7 +5,7 @@ Connecting the SSD1306 LCD to the BeagleBone Black Using a Device Driver
 ```sh
 make
 sudo insmod ssd1306.ko
-sudo chmod 777 /dev/dummydriver
+sudo chmod 777 /dev/ssd1306
 ```
 ## 2.	Run the test program
 ```sh
